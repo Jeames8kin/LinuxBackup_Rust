@@ -1,3 +1,3 @@
 rust/backup_script/target/debug/backup_script
 rust/backup_script/target/debug/backup_script.d
-rust/backup_script/target
+rust/backup_script/target/*
