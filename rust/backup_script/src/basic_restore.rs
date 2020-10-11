@@ -1,3 +1,3 @@
 pub fn basic_restore() {
-    println!("basic restore test")
+    println!("basic restore test");
 }
