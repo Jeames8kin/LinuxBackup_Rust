@@ -5,6 +5,8 @@ With that in mind, I have a bit of a plan for this project and where I want it t
 
   0. Learn to use the basics of Rust. (Working on it)
   1. Get Bash commands executed in Rust and have the output of them stored in variables (25%)
+  - I have gotten the very basics of Rust, but it has been causing a bit of trouble, in the way of running `pacman -Qqe | tr '\n' ' '`.
+
   2. Make a copy of some files, such as Downloads, Documents, config files, etc and put them all into a compressed file (either .gz or .tar) (0%)
   3. Make a versioning/dating scheme so that I can backup and restore without it being outdated or it not existing. (0%)
   4. Have it upload to GitHub (for file server, see Extra #2 below) 
