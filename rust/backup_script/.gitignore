@@ -1,3 +1,2 @@
-target
-target/debug
-target/rls
+target/*
+target/debug/*
