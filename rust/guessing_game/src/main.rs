@@ -30,7 +30,7 @@ fn main() {
 
         match guess.cmp(&secret_number) {                                   // Uses std::cmp::Ordering to check to see if the above variable and the one in the parameter are the same.
             Ordering::Less => println!("Too small, try again."),
-            Ordering::Greater => println!("Too large, try again."),
+            Ordering::Greater => println!("Too large, try again."),         // Testing Git.
             Ordering::Equal => {
                 println!("Bang on mate.");
                 break;
