@@ -3,8 +3,8 @@
 This is just for me to learn Rust and overall get better with programming while experimenting.
 With that in mind, I have a bit of a plan for this project and where I want it to go.
 
-  0. Learn to use the basics of Rust.
-  1. Get Bash commands executed in Rust and have the output of them stored in variables (0%, currently working on)
+  0. Learn to use the basics of Rust. (Working on it)
+  1. Get Bash commands executed in Rust and have the output of them stored in variables (0%)
   2. Make a copy of some files, such as Downloads, Documents, config files, etc and put them all into a compressed file (either .gz or .tar) (0%)
   3. Make a versioning/dating scheme so that I can backup and restore without it being outdated or it not existing. (0%)
   4. Have it upload to GitHub (for file server, see Extra #2 below) 
