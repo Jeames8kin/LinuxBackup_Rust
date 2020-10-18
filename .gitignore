@@ -2,3 +2,11 @@ rust/backup_script/target/debug/backup_script
 rust/backup_script/target/debug/backup_script.d
 rust/backup_script/target/*
 rust/backup_script/target/.rustc_info.json
+rust/TestFile
+rust/TestFile.rs
+rust/guessing_game/Cargo.lock
+rust/guessing_game/src/main.rs
+rust/hello_world2/Cargo.toml
+rust/hello_world2/src/main.rs
+rust/hello_world2/Cargo.lock
+rust/guessing_game/Cargo.toml
