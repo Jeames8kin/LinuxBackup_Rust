@@ -43,7 +43,7 @@ fn main() {
             1 => {
                     println!("Backup of current user will begin shortly...");
                     basic_backup::basic_backup();
-                    break;
+                    break;                                      //Breaks out of the loop.
                  }
 
             2 => {
