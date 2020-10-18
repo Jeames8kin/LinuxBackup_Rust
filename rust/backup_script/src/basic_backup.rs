@@ -6,7 +6,8 @@ pub fn basic_backup() {
         .arg("-l")
         .arg("-a")
         .spawn()
-        .expect("ls command failed to start"); */
+        .expect("ls command failed to start")
+        .ok();
         
         let pacman_command = "pacman -Qqe | tr '\n' ' '";
 
@@ -14,6 +15,14 @@ pub fn basic_backup() {
         
         .spawn()
         .expect("pacman failed to reply.");
+*/
+
+    let output = if cfg!(target_os = "windows") { //Checks if the host is Windows or Linux
+        println!("Run this on an Arch derivative, otherwise this will not run!")
+
+    } else {
+        println!("Checked host OS: Linux")
+    };
 
 } 
 
