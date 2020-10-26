@@ -1,7 +1,7 @@
 // Rust imports
 use std::process::Command;
 use std::string;
-use std;
+use std::io;
 
 // Crates
 use cmd_lib::run_cmd;
@@ -81,7 +81,7 @@ pub fn basic_backup() {
             sudo -s;
 
         }.is_err() {
-            println!("Error 2: Program exited unexpectedly.\n Please refer to the documentation for more about error codes!");
+            println!("Error 2: Program exited unexpectedly\n Please refer to the documentation for more about error codes!");
             std::process::exit(3);
 
         }
@@ -93,21 +93,6 @@ pub fn basic_backup() {
             .read_line(&mut beginRestore)
             .expect("That isn't a valid answer, answer yes/Yes/YES/y, or no/No/NO/n");
 
-            match beginRestore {
-                yes, Yes, YES, y => {
-                    println!("Starting restore...");
-                }
-
-                no, No, NO, n => {
-                    println!("Cancelled");
-                    std::process::exit(1);
-                }
-
-                _ => {
-                    println!("Invalid answer!");
-                }
-
-            }
 
     }
 
