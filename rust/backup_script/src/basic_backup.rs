@@ -1,4 +1,6 @@
 use std::process::Command;
+use cmd_lib::run_cmd;
+
 
 extern crate os_type;
 
@@ -20,15 +22,7 @@ pub fn basic_backup() {
         .expect("pacman failed to reply.");
 */
 
-<<<<<<< HEAD
-    let output = if cfg!(target_os = "windows") { //Checks if the host is Windows or Linux
-        println!("Run this on an Arch derivative, otherwise this will not run!")
-
-    } else {
-        println!("Checked host OS: Linux")
-    };
-=======
-/*    let output = if cfg!(target_os = "windows") { //Checks if the host is Windows or Linux
+/*  let output = if cfg!(target_os = "windows") { //Checks if the host is Windows or Linux
         println!("Run this on an Arch derivative, otherwise this will not run!");
         std::process::exit(1);
     } else {
@@ -38,7 +32,7 @@ pub fn basic_backup() {
     let _os = os_type::current_platform();
     match os_type::current_platform().os_type {
         os_type::OSType::Arch => {
-            backup_start();
+            backup_start(); 
         } 
         os_type::OSType::Manjaro => {
             println!("Please note that using Manjaro may have slightly out of date packages compared to Arch, so some things may not work.");
@@ -52,13 +46,22 @@ pub fn basic_backup() {
     
 
     fn backup_start() {
-        println!("Beginning backup...")
+        println!("Beginning backup...");
+
+        println!("Testing command capabilities...");
+        let test1 = "ls ~/";
+        let test2 = "LinuxBackup";
+        if run_cmd! {
+            echo "bad cmd" >&2;
+            ls ../../../;
+        }.is_err() {
+            std::process::exit(1);
+        }
 
         
 
     
     }
->>>>>>> 535dc20c5c7be24edc87df3cb309f6b61fa816dc
 
 } 
 
