@@ -40,11 +40,11 @@ pub fn basic_backup() {
     let _os = os_type::current_platform();
     match os_type::current_platform().os_type {
         os_type::OSType::Arch => {
-            backup_start(); 
+            testThing(); 
         } 
         os_type::OSType::Manjaro => {
             println!("Please note that using Manjaro may have slightly out of date packages compared to Arch and some things may not work.");
-            backup_start();
+            testThing();
         }
         _ => {
             println!("This operating system is invalid, please use Arch or Manjaro!");
@@ -54,7 +54,7 @@ pub fn basic_backup() {
     
     // Worry about exiting the program if something fails later, more shit to do.
 
-    fn backup_start() {
+    fn testThing() {
         println!("Beginning backup...");
 
         println!("Testing command capabilities...");
@@ -78,12 +78,12 @@ pub fn basic_backup() {
 
         if run_cmd! {
             echo "Please enter your password to proceed.";
-            sudo -s;
+            sudo pacman -Syu;
+            
+
 
         }.is_err() {
-            println!("Error 2: Program exited unexpectedly\n Please refer to the documentation for more about error codes!");
-            std::process::exit(3);
-
+                println!("Well, either you exited the root terminal or something else went wrong.")
         }
 
         println!("The current folders that will be backed up are:\n/home/jeames8kin/BasicBackupTest");
@@ -93,7 +93,38 @@ pub fn basic_backup() {
             .read_line(&mut beginRestore)
             .expect("That isn't a valid answer, answer yes/Yes/YES/y, or no/No/NO/n");
 
+            match beginRestore.as_str() {
+                "yes" | "Yes" | "YES" | "y" => {
+                    
+                }
 
+                "no" | "No" | "NO" | "n" => {
+                    println!("Aborted.");
+                }
+
+                _ => {
+                    println!("Not sure what you did there.");
+                }
+
+            }
+            
+
+
+
+    }
+
+    fn backup() {
+        println!("Copying files into /tmp...");
+
+        let mut username2 = run_fun!(whoami).unwrap();
+
+
+        if run_cmd! {
+            cp /home/${username2}/rustBackupTest/;
+
+        }.is_err() {
+            println!("Something went wrong. Retry, or abort? (r/a)");
+        }
     }
 
 } 
