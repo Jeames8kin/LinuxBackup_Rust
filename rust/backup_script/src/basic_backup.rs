@@ -13,29 +13,22 @@ pub fn basic_backup() {
 
     let scriptVerdict = false;         // Stays false until it reaches the end of the script successfully where it is true, otherwise will remain false.
 
-    println!("basic backup test");
+    enum Yes {
+        yes,
+        Yes,
+        YES,
+        y
+    }
 
-/*    let output = Command::new("ls")
-        .arg("-l")
-        .arg("-a")
-        .spawn()
-        .expect("ls command failed to start")
-        .ok();
-        
-        let pacman_command = "pacman -Qqe | tr '\n' ' '";
+    enum No {
+        no,
+        No,
+        NO,
+        n
+    }
 
-        let pacman_output = Command::new(pacman_command)
-        
-        .spawn()
-        .expect("pacman failed to reply.");
-*/
+    
 
-    /*  let output = if cfg!(target_os = "windows") { //Checks if the host is Windows or Linux
-            println!("Run this on an Arch derivative, otherwise this will not run!");
-            std::process::exit(1);
-        } else {
-            println!("Checked host OS: Linux")
-        }; */
 
     let _os = os_type::current_platform();
     match os_type::current_platform().os_type {
@@ -55,11 +48,20 @@ pub fn basic_backup() {
     // Worry about exiting the program if something fails later, more shit to do.
 
     fn testThing() {
+
+        let yes_string = "yes";
+        let Yes_string = "Yes";
+        let YES_string = "YES";
+        let y_string = "y";
+
+        let no_string = "no";
+        let No_string = "No";
+        let NO_string = "NO";
+        let n_string = "n";
+
         println!("Beginning backup...");
 
         println!("Testing command capabilities...");
-        let test1 = "ls ~/";
-        let test2 = "LinuxBackup";
 
         let fun1 = run_fun!(rustc --version).unwrap(); // Sets output of command to variable.
         eprintln!("Your Rust version is {}", fun1);
@@ -78,13 +80,15 @@ pub fn basic_backup() {
 
         if run_cmd! {
             echo "Please enter your password to proceed.";
-            sudo pacman -Syu;
+            
             
 
 
         }.is_err() {
                 println!("Well, either you exited the root terminal or something else went wrong.")
         }
+
+        
 
         println!("The current folders that will be backed up are:\n/home/jeames8kin/BasicBackupTest");
         println!("Are you sure you want to proceed?");
@@ -94,12 +98,37 @@ pub fn basic_backup() {
             .expect("That isn't a valid answer, answer yes/Yes/YES/y, or no/No/NO/n");
 
             match beginRestore.as_str() {
-                "yes" | "Yes" | "YES" | "y" => {
-                    
+                yes_string => {
+                    testThing();
+                } 
+
+                Yes_string => {
+                    testThing();
                 }
 
-                "no" | "No" | "NO" | "n" => {
-                    println!("Aborted.");
+                YES_string => {
+                    testThing();
+                }
+
+                y_string => {
+                    testThing();
+                }
+
+
+                no_string => {
+                    std::process::exit(1);
+                }
+
+                No_string => {
+                    std::process::exit(1);
+                }
+
+                NO_string => {
+                    std::process::exit(1);
+                }
+
+                n_string => {
+                    std::process::exit(1);
                 }
 
                 _ => {
@@ -113,17 +142,47 @@ pub fn basic_backup() {
 
     }
 
+    
+
     fn backup() {
+
+        let abort_string = "abort";
+        let retry_string = "retry";
+
         println!("Copying files into /tmp...");
 
-        let mut username2 = run_fun!(whoami).unwrap();
+        let username2 = run_fun!(whoami).unwrap();
 
 
         if run_cmd! {
-            cp /home/${username2}/rustBackupTest/;
+            mkdir /tmp/LinuxBackup_Rust;
+            cp -R /home/${username2}/rustBackupTest/ - | pv /tmp/LinuxBackup_Rust;
 
         }.is_err() {
+
             println!("Something went wrong. Retry, or abort? (r/a)");
+            let mut copyFailed = String::from("");
+            io::stdin()
+                .read_line(&mut copyFailed)
+                .expect("Take the L");
+
+            match copyFailed {
+                
+                abort_string => {
+                    std::process::exit(1);
+                }
+
+                retry_string => {
+                    backup();
+                }
+
+                _ => {
+                        println!("No idea what you wrote there, but that's fucken wrong");
+                        println!("{}", copyFailed);
+                        backup();
+                        
+                }
+            }
         }
     }
 
