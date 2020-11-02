@@ -1,192 +1,125 @@
-// Rust imports
+use std::io;
 use std::process::Command;
 use std::string;
-use std::io;
+use std::path::Path;
+use std::fs;
 
-// Crates
 use cmd_lib::run_cmd;
 use cmd_lib::run_fun;
 
 extern crate os_type;
 
 pub fn basic_backup() {
+    let scriptVerdict = false;
 
-    let scriptVerdict = false;         // Stays false until it reaches the end of the script successfully where it is true, otherwise will remain false.
-
-    enum Yes {
-        yes,
-        Yes,
-        YES,
-        y
-    }
-
-    enum No {
-        no,
-        No,
-        NO,
-        n
-    }
-
-    
-
-
-    let _os = os_type::current_platform();
+    let os = os_type::current_platform();
     match os_type::current_platform().os_type {
         os_type::OSType::Arch => {
-            testThing(); 
-        } 
+            testThing();
+        }
         os_type::OSType::Manjaro => {
-            println!("Please note that using Manjaro may have slightly out of date packages compared to Arch and some things may not work.");
+            println!("Please note that Manjaro is not supported, if something breaks or doesn't work you are at fault!");
             testThing();
         }
         _ => {
-            println!("This operating system is invalid, please use Arch or Manjaro!");
+            println!("This operating system is unsupported, please use Arch Linux!");
             std::process::exit(1);
         }
     }
-    
-    // Worry about exiting the program if something fails later, more shit to do.
-
-    fn testThing() {
-
-        let yes_string = "yes";
-        let Yes_string = "Yes";
-        let YES_string = "YES";
-        let y_string = "y";
-
-        let no_string = "no";
-        let No_string = "No";
-        let NO_string = "NO";
-        let n_string = "n";
-
-        println!("Beginning backup...");
-
-        println!("Testing command capabilities...");
-
-        let fun1 = run_fun!(rustc --version).unwrap(); // Sets output of command to variable.
-        eprintln!("Your Rust version is {}", fun1);
-
-        let username1 = run_fun!(whoami).unwrap();
-
-        if run_cmd! {
-
-            ls /home/${username1};                      // ${variable_here} is a way to use Rust defined variables in Shell.
-
-        }.is_err() {
-
-            println!("Something here doesn't seem right. ");
-
-        }
-
-        if run_cmd! {
-            echo "Please enter your password to proceed.";
-            
-            
 
 
-        }.is_err() {
-                println!("Well, either you exited the root terminal or something else went wrong.")
-        }
+}
 
-        
+fn testThing() {
 
-        println!("The current folders that will be backed up are:\n/home/jeames8kin/BasicBackupTest");
-        println!("Are you sure you want to proceed?");
-        let mut beginRestore = String::new();
-        io::stdin() 
-            .read_line(&mut beginRestore)
-            .expect("That isn't a valid answer, answer yes/Yes/YES/y, or no/No/NO/n");
+    println!("Starting backup process...");
 
-            match beginRestore.as_str() {
-                yes_string => {
-                    testThing();
-                } 
+    let fun1 = run_fun!(rustc --version).unwrap();
+    eprintln!("Installed Rust version: {}", fun1);
 
-                Yes_string => {
-                    testThing();
-                }
+    let username1 = run_fun!(whoami).unwrap();
 
-                YES_string => {
-                    testThing();
-                }
-
-                y_string => {
-                    testThing();
-                }
-
-
-                no_string => {
-                    std::process::exit(1);
-                }
-
-                No_string => {
-                    std::process::exit(1);
-                }
-
-                NO_string => {
-                    std::process::exit(1);
-                }
-
-                n_string => {
-                    std::process::exit(1);
-                }
-
-                _ => {
-                    println!("Not sure what you did there.");
-                }
-
-            }
-            
-
-
-
+    if run_cmd! {
+        ls /home/${username1};
+    }.is_err() {
+        println!("Something went wrong: Unable to list folders.");
     }
 
-    
+    println!("Aquiring root permissions...");
 
-    fn backup() {
+    if run_cmd! {
+        sudo echo;
+    }.is_err() {
+        println!("Something went wrong: Unable to aquire root or dialogue was closed.");
+    }
 
-        let abort_string = "abort";
-        let retry_string = "retry";
+    println!("Backup will include folders from: /home/{}/BasicBackupTest, do you want to proceed? (y/N)", username1);
 
-        println!("Copying files into /tmp...");
+    let mut input1 = String::from("");
 
-        let username2 = run_fun!(whoami).unwrap();
+    io::stdin()
+        .read_line(&mut input1)
+        .expect("That isn't a valid answer");
 
+    let mut input1_trimmed = input1.trim();
+
+    match input1_trimmed {
+
+        "yes" | "Yes" | "YES" | "y" | "Y" => {          // Strings don't work for this? Like, at all? Says it can't access/find them.
+            fileCopy();
+        },
+        "no" | "No" | "NO" | "n" | "N" => {
+            println!("Aborted.");
+
+        },
+        _ => {
+            println!("That wasn't a valid option!");
+        }
+    }
+
+    fn fileCopy() {
+        
+        let username1 = run_fun!(whoami).unwrap();
+
+        let tmpDir = "/tmp/LinuxBackup_Rust";
 
         if run_cmd! {
             mkdir /tmp/LinuxBackup_Rust;
-            cp -R /home/${username2}/rustBackupTest/ - | pv /tmp/LinuxBackup_Rust;
-
+            ls;
+            
         }.is_err() {
-
-            println!("Something went wrong. Retry, or abort? (r/a)");
-            let mut copyFailed = String::from("");
-            io::stdin()
-                .read_line(&mut copyFailed)
-                .expect("Take the L");
-
-            match copyFailed {
-                
-                abort_string => {
-                    std::process::exit(1);
-                }
-
-                retry_string => {
-                    backup();
-                }
-
-                _ => {
-                        println!("No idea what you wrote there, but that's fucken wrong");
-                        println!("{}", copyFailed);
-                        backup();
-                        
-                }
-            }
+            println!("The folder {} exists. Would you like to delete it?", tmpDir);
         }
+
+
+            let mut input2 = String::from("");
+
+            io::stdin()
+                .read_line(&mut input2)
+                .expect("That isn't a valid answer");
+        
+            let mut input2_trimmed = input2.trim();
+        
+            match input2_trimmed {
+        
+                "yes" | "Yes" | "YES" | "y" | "Y" => {    
+                          // Strings don't work for this? Like, at all? Says it can't access/find them.
+                    if run_cmd! {
+                        rm -R /tmp/LinuxBackup_Rust;
+                    }.is_err() {
+                        println!("Fucked if I know what happened");
+                    }
+
+                },
+                "no" | "No" | "NO" | "n" | "N" => {
+                    println!("Aborted.");
+        
+                },
+                _ => {
+                    println!("That wasn't a valid option!");
+                }
+        }
+
     }
 
-} 
-
-
-
+}
