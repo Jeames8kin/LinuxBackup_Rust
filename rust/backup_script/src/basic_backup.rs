@@ -80,6 +80,13 @@ fn testThing() {
 
     fn fileCopy() {
         
+        pub fn dirExists() {
+            let dirExistsVar = ("{}", Path::new("/tmp/LinuxBackup_Rust").exists());
+            return;
+        } 
+
+        dirExistsVar;
+
         let username1 = run_fun!(whoami).unwrap();
 
         let tmpDir = "/tmp/LinuxBackup_Rust";
@@ -89,9 +96,13 @@ fn testThing() {
             exit;
             
         }.is_err() {
-            let dirExists = println!("{}", Path::new("/tmp/LinuxBackup_Rust").exists());
+            
             
             // This is where we will test to see whether the folder actually exists, since I have to exit the script which immediately fires off .is_err()
+            
+            if  = false {
+
+            }
 
             println!("The folder {} exists. Would you like to delete it?", tmpDir);
         }
