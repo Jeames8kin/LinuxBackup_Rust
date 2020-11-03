@@ -25,10 +25,11 @@ pub fn basic_backup() {
             println!("This operating system is unsupported, please use Arch Linux!");
             std::process::exit(1);
         }
+
     }
 
-
 }
+
 
 fn testThing() {
 
@@ -84,14 +85,16 @@ fn testThing() {
         let tmpDir = "/tmp/LinuxBackup_Rust";
 
         if run_cmd! {
-            sudo mkdir /tmp/LinuxBackup_Rust;
-            ls /tmp/LinuxBackup_Rust;
-            
+            mkdir /tmp/LinuxBackup_Rust;
+            exit;
             
         }.is_err() {
+            let dirExists = println!("{}", Path::new("/tmp/LinuxBackup_Rust").exists());
+            
+            // This is where we will test to see whether the folder actually exists, since I have to exit the script which immediately fires off .is_err()
+
             println!("The folder {} exists. Would you like to delete it?", tmpDir);
         }
-
 
             let mut input2 = String::from("");
 
@@ -107,14 +110,14 @@ fn testThing() {
                           // Strings don't work for this? Like, at all? Says it can't access/find them.
                     if run_cmd! {
                         echo "Deleting folder...";
-                        rm -R /tmp/LinuxBackup_Rust;
+                        sudo rm -R /tmp/LinuxBackup_Rust;
                         echo "Deleted.";
                     }.is_err() {
                         println!("Fucked if I know what happened");
                     }
 
-                    fileCopy()
-
+                    println!("test");
+                
                 },
                 "no" | "No" | "NO" | "n" | "N" => {
                     println!("Aborted.");
@@ -123,8 +126,11 @@ fn testThing() {
                 _ => {
                     println!("That wasn't a valid option!");
                 }
-            }
 
+        }
+    // fileCopy function bracket.
     }
+
+    // testThing function bracket.
 
 }
