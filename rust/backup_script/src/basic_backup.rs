@@ -83,9 +83,7 @@ fn testThing() {
         pub fn dirExists() {
             let dirExistsVar = ("{}", Path::new("/tmp/LinuxBackup_Rust").exists());
             return;
-        } 
-
-        dirExistsVar;
+        }
 
         let username1 = run_fun!(whoami).unwrap();
 
@@ -99,10 +97,6 @@ fn testThing() {
             
             
             // This is where we will test to see whether the folder actually exists, since I have to exit the script which immediately fires off .is_err()
-            
-            if  = false {
-
-            }
 
             println!("The folder {} exists. Would you like to delete it?", tmpDir);
         }
