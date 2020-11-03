@@ -84,8 +84,9 @@ fn testThing() {
         let tmpDir = "/tmp/LinuxBackup_Rust";
 
         if run_cmd! {
-            mkdir /tmp/LinuxBackup_Rust;
-            ls;
+            sudo mkdir /tmp/LinuxBackup_Rust;
+            ls /tmp/LinuxBackup_Rust;
+            
             
         }.is_err() {
             println!("The folder {} exists. Would you like to delete it?", tmpDir);
@@ -105,10 +106,14 @@ fn testThing() {
                 "yes" | "Yes" | "YES" | "y" | "Y" => {    
                           // Strings don't work for this? Like, at all? Says it can't access/find them.
                     if run_cmd! {
+                        echo "Deleting folder...";
                         rm -R /tmp/LinuxBackup_Rust;
+                        echo "Deleted.";
                     }.is_err() {
                         println!("Fucked if I know what happened");
                     }
+
+                    fileCopy()
 
                 },
                 "no" | "No" | "NO" | "n" | "N" => {
@@ -118,7 +123,7 @@ fn testThing() {
                 _ => {
                     println!("That wasn't a valid option!");
                 }
-        }
+            }
 
     }
 
