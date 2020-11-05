@@ -82,7 +82,9 @@ fn test_thing() {
             _ => {
                 println!("That wasn't a valid option!");
             }
+
         }
+
     }
 
 //-----------------------------------------------------------------------------
@@ -106,12 +108,16 @@ fn test_thing() {
             _ => {
                 make_dir(directory.trim());
             }
-        }
 
+        }
 
     }
 
-        
+//-----------------------------------------------------------------------------
+
+    fn copyFiles() {
+
+    } 
 
 //-----------------------------------------------------------------------------
 
@@ -122,7 +128,12 @@ fn test_thing() {
                 println!("Created {}", path.as_ref().display());
             }
             Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
-                println!("{} already exists", path.as_ref().display());
+                println!("{} already exists, clearing directory...", path.as_ref().display());
+                if run_cmd! {
+                    rm -R /tmp/LinuxBackup_Rust;
+                }.is_err() {
+                    
+                }
             }
             Err(ref e) if e.kind() == io::ErrorKind::PermissionDenied => {
                 println!("Cannot create directory {}: Permission denied. Elevate priviledges?", path.as_ref().display());
@@ -130,7 +141,9 @@ fn test_thing() {
             Err(ref e) => {
                 println!("Other error: {}", e);
             }
+
         }
+
     }
 
     // dirSetup function bracket.
