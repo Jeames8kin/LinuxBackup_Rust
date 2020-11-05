@@ -10,16 +10,16 @@ use cmd_lib::run_fun;
 extern crate os_type;
 
 pub fn basic_backup() {
-    let scriptVerdict = false;
+    let script_verdict = false;
 
     let os = os_type::current_platform();
     match os_type::current_platform().os_type {
         os_type::OSType::Arch => {
-            testThing();
+            test_thing();
         }
         os_type::OSType::Manjaro => {
             println!("Please note that Manjaro is not supported, if something breaks or doesn't work you are at fault!");
-            testThing();
+            test_thing();
         }
         _ => {
             println!("This operating system is unsupported, please use Arch Linux!");
@@ -30,8 +30,9 @@ pub fn basic_backup() {
 
 }
 
+//-----------------------------------------------------------------------------
 
-fn testThing() {
+fn test_thing() {
 
     println!("Starting backup process...");
 
@@ -51,7 +52,7 @@ fn testThing() {
     if run_cmd! {
         sudo echo;
     }.is_err() {
-        println!("Something went wrong: Unable to aquire root or dialogue was closed.");
+        println!("Something went wrong: Unable to aquire root or dialogue was closed. Cannot proceed.");
     }
 
     println!("Backup will include folders from: /home/{}/BasicBackupTest, do you want to proceed? (y/N)", username1);
@@ -64,78 +65,74 @@ fn testThing() {
 
     let mut input1_trimmed = input1.trim();
 
-    match input1_trimmed {
 
-        "yes" | "Yes" | "YES" | "y" | "Y" => {          // Strings don't work for this? Like, at all? Says it can't access/find them.
-            fileCopy();
-        },
-        "no" | "No" | "NO" | "n" | "N" => {
-            println!("Aborted.");
+    loop {
 
-        },
-        _ => {
-            println!("That wasn't a valid option!");
+        match input1_trimmed {
+
+            "yes" | "Yes" | "YES" | "y" | "Y" => {          // Defined Strings don't work for this? Like, at all? Says it can't access/find them.
+                dir_setup();
+                break;
+            },
+            "no" | "No" | "NO" | "n" | "N" => {
+                println!("Aborted.");
+                break;
+
+            },
+            _ => {
+                println!("That wasn't a valid option!");
+            }
         }
     }
 
-    fn fileCopy() {
-        
-        pub fn dirExists() {
-            let dirExistsVar = ("{}", Path::new("/tmp/LinuxBackup_Rust").exists());
-            return;
+//-----------------------------------------------------------------------------
+
+    fn dir_setup() {
+
+        println!("Choose where to store the temporary directory (default is /tmp/LinuxBackup_Rust)\n>>>");
+
+        let mut directory = String::from("");
+
+        io::stdin()
+            .read_line(&mut directory)
+            .expect("Test error");
+
+        match directory.as_ref() {
+            "\n" => {
+                directory = String::from("/tmp/LinuxBackup_Rust");
+                make_dir(directory);
+            }
+
+            _ => {
+                make_dir(directory.trim());
+            }
         }
 
-        let username1 = run_fun!(whoami).unwrap();
 
-        let tmpDir = "/tmp/LinuxBackup_Rust";
-
-        if run_cmd! {
-            mkdir /tmp/LinuxBackup_Rust;
-            exit;
-            
-        }.is_err() {
-            
-            
-            // This is where we will test to see whether the folder actually exists, since I have to exit the script which immediately fires off .is_err()
-
-            println!("The folder {} exists. Would you like to delete it?", tmpDir);
-        }
-
-            let mut input2 = String::from("");
-
-            io::stdin()
-                .read_line(&mut input2)
-                .expect("That isn't a valid answer");
-        
-            let mut input2_trimmed = input2.trim();
-        
-            match input2_trimmed {
-        
-                "yes" | "Yes" | "YES" | "y" | "Y" => {    
-                          // Strings don't work for this? Like, at all? Says it can't access/find them.
-                    if run_cmd! {
-                        echo "Deleting folder...";
-                        sudo rm -R /tmp/LinuxBackup_Rust;
-                        echo "Deleted.";
-                    }.is_err() {
-                        println!("Fucked if I know what happened");
-                    }
-
-                    println!("test");
-                
-                },
-                "no" | "No" | "NO" | "n" | "N" => {
-                    println!("Aborted.");
-        
-                },
-                _ => {
-                    println!("That wasn't a valid option!");
-                }
-
-        }
-    // fileCopy function bracket.
     }
 
-    // testThing function bracket.
+        
+
+//-----------------------------------------------------------------------------
+
+    fn make_dir<T: AsRef<Path>>(path: T) {      // This line acts as a function I can call and put a directory into its arguments, no extra code needed each folder.
+        let result = fs::create_dir(&path);
+        match result {
+            Ok(_) => {
+                println!("Created {}", path.as_ref().display());
+            }
+            Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
+                println!("{} already exists", path.as_ref().display());
+            }
+            Err(ref e) if e.kind() == io::ErrorKind::PermissionDenied => {
+                println!("Cannot create directory {}: Permission denied. Elevate priviledges?", path.as_ref().display());
+            }
+            Err(ref e) => {
+                println!("Other error: {}", e);
+            }
+        }
+    }
+
+    // dirSetup function bracket.
 
 }
