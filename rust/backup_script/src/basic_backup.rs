@@ -71,13 +71,12 @@ fn test_thing() {
         match input1_trimmed {
 
             "yes" | "Yes" | "YES" | "y" | "Y" => {          // Defined Strings don't work for this? Like, at all? Says it can't access/find them.
-                dir_setup();
+                temp_dir_setup();
                 break;
             },
             "no" | "No" | "NO" | "n" | "N" => {
                 println!("Aborted.");
                 break;
-
             },
             _ => {
                 println!("That wasn't a valid option!");
@@ -89,7 +88,7 @@ fn test_thing() {
 
 //-----------------------------------------------------------------------------
 
-    fn dir_setup() {
+    fn temp_dir_setup() {
 
         println!("Choose where to store the temporary directory (default is /tmp/LinuxBackup_Rust)\n>>>");
 
@@ -115,8 +114,8 @@ fn test_thing() {
 
 //-----------------------------------------------------------------------------
 
-    fn copyFiles() {
-
+    fn copyFiles(tempDirPath:String) {
+        println!("Backing up () (temp dir: {}", tempDirPath)
     } 
 
 //-----------------------------------------------------------------------------
@@ -126,11 +125,13 @@ fn test_thing() {
         match result {
             Ok(_) => {
                 println!("Created {}", path.as_ref().display());
+                let mut temp_dir_path = println!("{}", path.as_ref().display());
             }
             Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
-                println!("{} already exists, clearing directory...", path.as_ref().display());
+                println!("{} already exists, clearing directory...", path.as_ref().display());    
+                let mut temp_dir_path =  println!("{}", path.as_ref().display());  
                 if run_cmd! {
-                    rm -R /tmp/LinuxBackup_Rust;
+                    rm -R ${temp_dir_path};
                 }.is_err() {
                     
                 }
