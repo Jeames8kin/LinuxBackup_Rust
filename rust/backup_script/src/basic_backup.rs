@@ -195,7 +195,14 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
 
     
     fn copyFiles(tempDirPath:String, backup_dir:String) {
-        println!("Backing up {} (temp dir: {})", backup_dir, tempDirPath)
+        println!("Backing up {} (temp dir: {})", backup_dir, tempDirPath);
+
+        if run_cmd! {
+            pv ${backup_dir} > /tmp/LinuxBackup_Rust;
+        }.is_err() {
+            
+        }
+
     } 
 
 
