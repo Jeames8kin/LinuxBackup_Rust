@@ -34,6 +34,8 @@ pub fn basic_backup() {
 
 fn test_thing() {
 
+    let mut backup_dir = "/home/jeames8kin/BasicBackupTest";
+
     println!("Starting backup process...");
 
     let fun1 = run_fun!(rustc --version).unwrap();
@@ -53,9 +55,12 @@ fn test_thing() {
         sudo echo;
     }.is_err() {
         println!("Something went wrong: Unable to aquire root or dialogue was closed. Cannot proceed.");
+        std::process::exit(1);
     }
 
     println!("Backup will include folders from: /home/{}/BasicBackupTest, do you want to proceed? (y/N)", username1);
+
+    loop {
 
     let mut input1 = String::from("");
 
@@ -65,13 +70,10 @@ fn test_thing() {
 
     let mut input1_trimmed = input1.trim();
 
-
-    loop {
-
         match input1_trimmed {
 
             "yes" | "Yes" | "YES" | "y" | "Y" => {          // Defined Strings don't work for this? Like, at all? Says it can't access/find them.
-                temp_dir_setup();
+                temp_dir_setup(backup_dir.to_string());
                 break;
             },
             "no" | "No" | "NO" | "n" | "N" => {
@@ -88,9 +90,11 @@ fn test_thing() {
 
 //-----------------------------------------------------------------------------
 
-    fn temp_dir_setup() {
+    fn temp_dir_setup(backup_dir:String) {
 
-        println!("Choose where to store the temporary directory (default is /tmp/LinuxBackup_Rust)\n>>>");
+        let mut backup_dir1 = backup_dir;
+
+        println!("Choose where to store the temporary directory (default is /tmp/LinuxBackup_Rust)");
 
         let mut directory = String::from("");
 
@@ -101,11 +105,11 @@ fn test_thing() {
         match directory.as_ref() {
             "\n" => {
                 directory = String::from("/tmp/LinuxBackup_Rust");
-                make_dir(directory);
+                make_dir(directory.trim().to_string(), backup_dir1);
             }
 
             _ => {
-                make_dir(directory.trim());
+                make_dir(directory.trim().to_string(), backup_dir1);     //We need to copy/transfer/re-assign directory in a variable in make_dir, since once the program leaves the scope of the variable it basically destroys it.
             }
 
         }
@@ -114,38 +118,88 @@ fn test_thing() {
 
 //-----------------------------------------------------------------------------
 
-    fn copyFiles(tempDirPath:String) {
-        println!("Backing up () (temp dir: {}", tempDirPath)
-    } 
+fn make_dir(directory:String, backup_dir:String) {      // This line acts as a function I can call and put a directory into its arguments, no extra code needed each folder.
+    let directory1 = directory.as_str();
+    let result = fs::create_dir(directory1);
 
-//-----------------------------------------------------------------------------
+    let mut choice1 = String::new();
 
-    fn make_dir<T: AsRef<Path>>(path: T) {      // This line acts as a function I can call and put a directory into its arguments, no extra code needed each folder.
-        let result = fs::create_dir(&path);
-        match result {
-            Ok(_) => {
-                println!("Created {}", path.as_ref().display());
-                let mut temp_dir_path = println!("{}", path.as_ref().display());
-            }
-            Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
-                println!("{} already exists, clearing directory...", path.as_ref().display());    
-                let mut temp_dir_path =  println!("{}", path.as_ref().display());  
-                if run_cmd! {
-                    rm -R ${temp_dir_path};
-                }.is_err() {
+    match result {
+        Ok(_) => {
+            println!("Created {}", directory1);
+            let mut temp_dir_path = println!("{}", directory1);
+            copyFiles(directory1.to_string(), backup_dir)
+        }
+        Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
+            println!("{} already exists, clearing directory...", directory1);    
+            let mut temp_dir_path = directory1;  
+
+            if run_cmd! {
+                rm -R ${temp_dir_path};
+                mkdir ${temp_dir_path};
+            }.is_err() {
+
+                println!("Error: Unable to clear directory. Do you require elevated permissions for the chosen directory ({})?", directory1);
+
+                io::stdin()
+                    .read_line(&mut choice1)
+                    .expect("Error: Input was either invalid or failed, please re-run the program!");
                     
+                match choice1.as_str() {
+
+                    "yes" | "Yes" | "YES" | "y" | "Y" => {
+
+                        if run_cmd! {
+                            sudo echo
+                        }.is_err() {
+                            if run_cmd! {
+                                echo "Removing ${directory1}...";
+                                sudo rm -R ${directory1};
+                            }.is_err() {
+                                println!("Error: Could not gain elevated priviledges! Cannot continue.")
+                            }
+                            
+                        }
+                    }
+
+                    _ => {
+
+                    }
                 }
             }
-            Err(ref e) if e.kind() == io::ErrorKind::PermissionDenied => {
-                println!("Cannot create directory {}: Permission denied. Elevate priviledges?", path.as_ref().display());
-            }
-            Err(ref e) => {
-                println!("Other error: {}", e);
-            }
 
+            copyFiles(directory1.to_string(), backup_dir);
+            
+        }
+        Err(ref e) if e.kind() == io::ErrorKind::PermissionDenied => {
+            println!("Cannot create directory {}: Permission denied. Elevate priviledges?", directory1);
+            io::stdin()
+                .read_line(&mut choice1)
+                .expect("Failed");
+
+            let mut elevatePriviledges = String::from("");
+
+            io::stdin()
+                .read_line(&mut elevatePriviledges)
+                .expect("That was invalid!");
+        }
+        Err(ref e) => {
+            println!("Other error: {}", e);
         }
 
     }
+
+}
+    
+//-----------------------------------------------------------------------------
+
+    
+    fn copyFiles(tempDirPath:String, backup_dir:String) {
+        println!("Backing up {} (temp dir: {})", backup_dir, tempDirPath)
+    } 
+
+
+    
 
     // dirSetup function bracket.
 
