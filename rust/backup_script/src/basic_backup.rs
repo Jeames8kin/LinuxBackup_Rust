@@ -207,11 +207,19 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
         println!("Backing up {} (temp dir: {})", backup_dir, tempDirPath);
         let mut systemTime = SystemTime::now();
         
+        let pv_check = run_fun!(pacman -Qqe | grep pv).unwrap();
+        println!("{}", pv_check);
+
+        if pv_check == "pv" {
+            println!("pv is installed");
+        } else {
+            println!("pv is not installed, unable to show progress!")
+        }
 
         if run_cmd! {
             tar -czf - /home/jeames8kin/rustBackupTest | pv > /tmp/LinuxBackup_Rust/backup.tar;
         }.is_err() {
-            println!("Dunno what the fuck happened here");
+            println!("");
         }
 
     } 
