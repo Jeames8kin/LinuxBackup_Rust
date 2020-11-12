@@ -3,6 +3,7 @@ use std::process::Command;
 use std::string;
 use std::path::Path;
 use std::fs;
+use std::time::{Duration, SystemTime};
 
 use cmd_lib::run_cmd;
 use cmd_lib::run_fun;
@@ -102,7 +103,7 @@ fn test_thing() {
             .read_line(&mut directory)
             .expect("Test error");
 
-        match directory.as_ref() {
+        match directory.as_ref() {      //To compare a String, it needs to be in str rather than String, otherwise it just uses the first match arm. 
             "\n" => {
                 directory = String::from("/tmp/LinuxBackup_Rust");
                 make_dir(directory.trim().to_string(), backup_dir1);
@@ -160,12 +161,20 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
                             }
                             
                         }
+
+                    }
+
+                    "no" | "No" | "NO" | "n" | "N" => {
+                        println!("Aborted.");
+                        std::process::exit(1);
                     }
 
                     _ => {
 
                     }
+
                 }
+
             }
 
             copyFiles(directory1.to_string(), backup_dir);
@@ -196,11 +205,13 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
     
     fn copyFiles(tempDirPath:String, backup_dir:String) {
         println!("Backing up {} (temp dir: {})", backup_dir, tempDirPath);
+        let mut systemTime = SystemTime::now();
+        
 
         if run_cmd! {
-            pv ${backup_dir} > /tmp/LinuxBackup_Rust;
+            tar -czf - /home/jeames8kin/rustBackupTest | pv > /tmp/LinuxBackup_Rust/backup.tar;
         }.is_err() {
-            
+            println!("Dunno what the fuck happened here");
         }
 
     } 
