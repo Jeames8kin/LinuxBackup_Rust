@@ -3,7 +3,7 @@ use std::process::Command;
 use std::string;
 use std::path::Path;
 use std::fs;
-use std::time::{Duration, SystemTime};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use cmd_lib::run_cmd;
 use cmd_lib::run_fun;
@@ -43,12 +43,6 @@ fn test_thing() {
     eprintln!("Installed Rust version: {}", fun1);
 
     let username1 = run_fun!(whoami).unwrap();
-
-    if run_cmd! {
-        ls /home/${username1};
-    }.is_err() {
-        println!("Something went wrong: Unable to list folders.");
-    }
 
     println!("Aquiring root permissions...");
 
@@ -126,11 +120,13 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
     let mut choice1 = String::new();
 
     match result {
+
         Ok(_) => {
             println!("Created {}", directory1);
             let mut temp_dir_path = println!("{}", directory1);
-            copyFiles(directory1.to_string(), backup_dir)
+            pv_check(directory1.to_string(), backup_dir)
         }
+
         Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
             println!("{} already exists, clearing directory...", directory1);    
             let mut temp_dir_path = directory1;  
@@ -177,23 +173,26 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
 
             }
 
-            copyFiles(directory1.to_string(), backup_dir);
+            pv_check(directory1.to_string(), backup_dir);
             
         }
+
         Err(ref e) if e.kind() == io::ErrorKind::PermissionDenied => {
             println!("Cannot create directory {}: Permission denied. Elevate priviledges?", directory1);
             io::stdin()
                 .read_line(&mut choice1)
                 .expect("Failed");
 
-            let mut elevatePriviledges = String::from("");
+            let mut elevate_priviledges = String::from("");
 
             io::stdin()
-                .read_line(&mut elevatePriviledges)
+                .read_line(&mut elevate_priviledges)
                 .expect("That was invalid!");
         }
+
         Err(ref e) => {
             println!("Other error: {}", e);
+
         }
 
     }
@@ -202,30 +201,49 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
     
 //-----------------------------------------------------------------------------
 
-    
-    fn copyFiles(tempDirPath:String, backup_dir:String) {
-        println!("Backing up {} (temp dir: {})", backup_dir, tempDirPath);
-        let mut systemTime = SystemTime::now();
+    fn pv_check(temp_dir_path:String, backup_dir:String) {
+        println!("Backing up {} (temp dir: {})", backup_dir, temp_dir_path);
+        let mut system_time = SystemTime::now();
         
         let pv_check = run_fun!(pacman -Qqe | grep pv).unwrap();
-        println!("{}", pv_check);
 
         if pv_check == "pv" {
-            println!("pv is installed");
+            println!("pv is already installed");
+            has_pv(temp_dir_path, backup_dir);
         } else {
-            println!("pv is not installed, unable to show progress!")
+            if run_cmd! {
+                sudo pacman -S pv;
+            }.is_err() {
+                println!("The backup can continue without pv, but the progress will not be displayed.");
+                no_pv(temp_dir_path, backup_dir);
+            }
         }
 
-        if run_cmd! {
-            tar -czf - /home/jeames8kin/rustBackupTest | pv > /tmp/LinuxBackup_Rust/backup.tar;
-        }.is_err() {
-            println!("");
-        }
+        
 
     } 
 
+    fn has_pv(temp_dir_path:String, backup_dir:String) {
 
-    
+        if run_cmd! {
+            tar -czf - ${temp_dir_path}/backup.tar | pv > ${backup_dir};     // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
+        }.is_err() {
+            println!("The archive failed?");
+        }
+    }
+
+    fn no_pv(temp_dir_path:String, backup_dir:String) {
+
+        if run_cmd! {
+            tar -czf ${temp_dir_path}/backup.tar ${backup_dir};     // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
+        }.is_err() {
+            println!("The archive failed?");
+        }
+    }
+
+    fn package_backup() {
+        // pacman -Qqe | awk '{print $1}' | tr '\n' ' ' > packages.txt
+    }
 
     // dirSetup function bracket.
 
