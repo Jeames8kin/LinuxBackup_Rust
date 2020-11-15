@@ -226,6 +226,7 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
     fn has_pv(temp_dir_path:String, backup_dir:String) {
 
         if run_cmd! {
+            echo "has pv";
             tar -czf - ${temp_dir_path}/backup.tar | pv > ${backup_dir};     // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
         }.is_err() {
             println!("The archive failed?");
@@ -234,8 +235,12 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
 
     fn no_pv(temp_dir_path:String, backup_dir:String) {
 
+        let username1 = run_fun!(whoami).unwrap();
+
         if run_cmd! {
-            tar -czf ${temp_dir_path}/backup.tar ${backup_dir};     // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
+            echo "no pv";
+//            tar -czf ${temp_dir_path}/backup.tar ${backup_dir};      // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
+            tar -czf /tmp/LinuxBackup_Rust/backup.tar /home/${username1}/rustBackupTest;
         }.is_err() {
             println!("The archive failed?");
         }
