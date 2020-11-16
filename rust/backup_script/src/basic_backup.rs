@@ -218,9 +218,7 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
                 no_pv(temp_dir_path, backup_dir);
             }
         }
-
         
-
     } 
 
     fn has_pv(temp_dir_path:String, backup_dir:String) {
@@ -247,7 +245,7 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
     }
 
     fn package_backup() {
-        // pacman -Qqe | awk '{print $1}' | tr '\n' ' ' > packages.txt
+        let package_list = run_fun!("pacman -Qqe | awk '{print $1}' | tr '\n' ' '").unwrap();
     }
 
     // dirSetup function bracket.
