@@ -19,7 +19,7 @@ pub fn basic_backup() {
             test_thing();
         }
         os_type::OSType::Manjaro => {
-            println!("Please note that Manjaro is not supported, if something breaks or doesn't work you are at fault!");
+            println!("Please note that Manjaro is not supported, if something breaks or doesn't work you are at fault! ");
             test_thing();
         }
         _ => {
@@ -35,7 +35,7 @@ pub fn basic_backup() {
 
 fn test_thing() {
 
-    let mut backup_dir = "/home/jeames8kin/BasicBackupTest";
+    let mut backup_dir = "/home/jeames8kin/rustTestEnv";
 
     println!("Starting backup process...");
 
@@ -221,24 +221,28 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
         
     } 
 
-    fn has_pv(temp_dir_path:String, backup_dir:String) {
+    fn has_pv(temp_dir_path:String, backup_dir:String) {     // Run this is pv is installed.
 
         if run_cmd! {
-            echo "has pv";
-            tar -czf - ${temp_dir_path}/backup.tar | pv > ${backup_dir};     // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
+//          echo "has pv";
+            tar -czf - ${backup_dir} | pv > ${temp_dir_path}/backup.tar;
+            sha256sum /tmp/LinuxBackup_Rust/backup.tar > echo /tmp/LinuxBackup_Rust/
+                 // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
         }.is_err() {
             println!("The archive failed?");
+
         }
+
     }
 
-    fn no_pv(temp_dir_path:String, backup_dir:String) {
+    fn no_pv(temp_dir_path:String, backup_dir:String) {     // Run this if pv is not installed.
 
         let username1 = run_fun!(whoami).unwrap();
 
         if run_cmd! {
-            echo "no pv";
-//            tar -czf ${temp_dir_path}/backup.tar ${backup_dir};      // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
-            tar -czf /tmp/LinuxBackup_Rust/backup.tar /home/${username1}/rustBackupTest;
+//          echo "no pv";
+            tar -czf ${temp_dir_path}/backup.tar ${backup_dir};  
+
         }.is_err() {
             println!("The archive failed?");
         }
@@ -251,3 +255,4 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
     // dirSetup function bracket.
 
 }
+
