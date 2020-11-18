@@ -239,6 +239,8 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
             println!("The sha256 failed to run");
         }
 
+        package_backup();
+
     }
 
     fn no_pv(temp_dir_path:String, backup_dir:String) {     // Run this if pv is not installed.
@@ -252,10 +254,14 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
         }.is_err() {
             println!("The archive failed?");
         }
+
+        package_backup();
+
     }
 
     fn package_backup() {
-        let package_list = run_fun!("pacman -Qqe | awk '{print $1}' | tr '\n' ' '").unwrap();
+        let package_list = run_fun!(pacman -Qqe).unwrap();
+        println!("{}", package_list);
     }
 
     // dirSetup function bracket.
