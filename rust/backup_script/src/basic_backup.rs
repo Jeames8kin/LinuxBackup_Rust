@@ -261,7 +261,17 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
 
     fn package_backup() {
         let package_list = run_fun!(pacman -Qqe).unwrap();
-        println!("{}", package_list);
+        
+        match package_list.as_str() {
+
+            "xorg" => {
+                println!("")
+            }
+
+            _ => {
+
+            }
+        }
     }
 
     // dirSetup function bracket.
