@@ -226,11 +226,17 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
         if run_cmd! {
 //          echo "has pv";
             tar -czf - ${backup_dir} | pv > ${temp_dir_path}/backup.tar;
-            sha256sum /tmp/LinuxBackup_Rust/backup.tar > echo /tmp/LinuxBackup_Rust/
                  // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
         }.is_err() {
             println!("The archive failed?");
+        }
 
+        if run_cmd! {
+            echo "exa output";
+            exa /tmp/LinuxBackup_Rust/;
+            sha256sum /tmp/LinuxBackup_Rust/backup.tar > /tmp/LinuxBackup_Rust/sha256;
+        }.is_err() {
+            println!("The sha256 failed to run");
         }
 
     }
