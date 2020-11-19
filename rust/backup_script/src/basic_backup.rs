@@ -265,10 +265,11 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
         match package_list.as_str() {
 
             "xorg" => {
-                println!("")
+                println!("{} is installed", package_list);
             }
-
+                
             _ => {
+                println!("{} is not installed", package_list);
 
             }
         }
