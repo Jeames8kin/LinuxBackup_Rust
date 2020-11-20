@@ -7,6 +7,9 @@ mod basic_backup;
 
 fn main() {
 
+    // Use this line below to jump to a test point for neatness (doesn't work anyway?).
+    
+
     let title = "Backup and restore thing";    
     let version = "Current version: v1.0.6";
     let disclaimer = "Note: This program is subject to change at anytime.";
