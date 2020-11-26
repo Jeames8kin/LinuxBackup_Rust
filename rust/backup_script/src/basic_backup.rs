@@ -4,11 +4,13 @@ use std::string;
 use std::path::Path;
 use std::fs;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use chrono::prelude::*;
 
 use cmd_lib::run_cmd;
 use cmd_lib::run_fun;
 
 extern crate os_type;
+extern crate chrono;
 
 pub fn basic_backup() {
     let script_verdict = false;
@@ -260,10 +262,17 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
     }
 
     fn package_backup() {
+        let utc: chrono::DateTime<Local> = Local::now();    // Sets this variable to the current date and time.
+        let mut utc2 = utc.to_string();     // Converts the time and date variable to a String to be manipulated.
+        utc2.truncate(19);
+        utc2 = str::replace(utc2.as_str(), ":", "_");
+
+        println!("{}", utc2);
+
         let package_list = run_fun!(pacman -Qqe).unwrap();
         let package_list1 = str::replace(package_list.as_str(), "\n", " ");
         
-        let history = run_fun!(history);
+
 
         
     }
