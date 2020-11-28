@@ -1,3 +1,6 @@
+//TODO: Redo this entire file with proper functions since it's all over the shop.
+//TODO: Not make the paths str variables/hardcoded.
+
 use std::io;
 use std::process::Command;
 use std::string;
@@ -12,17 +15,17 @@ use cmd_lib::run_fun;
 extern crate os_type;
 extern crate chrono;
 
-pub fn basic_backup() {
+pub fn bb_check_os() {
     let script_verdict = false;
 
     let os = os_type::current_platform();
     match os_type::current_platform().os_type {
         os_type::OSType::Arch => {
-            test_thing();
+            bb_initialisation();
         }
         os_type::OSType::Manjaro => {
             println!("Please note that Manjaro is not supported, if something breaks or doesn't work you are at fault! ");
-            test_thing();
+            bb_initialisation();
         }
         _ => {
             println!("This operating system is unsupported, please use Arch Linux!");
@@ -35,7 +38,7 @@ pub fn basic_backup() {
 
 //-----------------------------------------------------------------------------
 
-fn test_thing() {
+fn bb_initialisation() {
 
     let mut backup_dir = "/home/jeames8kin/rustTestEnv";
 
@@ -274,7 +277,7 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
         let package_list1 = str::replace(package_list.as_str(), "\n", " ");
 
         if run_fun! {
-            echo ${package_list1} > test.txt;
+            
 
 
         }.is_err() {

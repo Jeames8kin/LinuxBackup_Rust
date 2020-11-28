@@ -45,7 +45,7 @@ fn main() {
         match option1 {                                         //This will throw an error if the line on line 48 does not exist.
             1 => {
                     println!("Backup of current user will begin shortly...");
-                    basic_backup::basic_backup();
+                    basic_backup::bb_check_os();
                     break;                                      //Breaks out of the loop.
                  }
 
@@ -56,7 +56,7 @@ fn main() {
 
             3 => {
                     println!("Restore will begin shortly...");
-                    basic_restore::basic_restore();
+                    basic_restore::br_check_os();
                     break;
                  }
 
