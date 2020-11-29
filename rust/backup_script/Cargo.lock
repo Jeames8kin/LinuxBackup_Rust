@@ -29,6 +29,7 @@ dependencies = [
  "cmd_lib",
  "os_type",
  "rand",
+ "termion",
  "tui",
 ]
 

@@ -8,7 +8,11 @@ edition = "2018"
 
 [dependencies]
 rand = "0.6.0"
+
 os_type = "2.2"
 cmd_lib = "0.8.4"
+
 chrono = "0.4"
+
 tui = "0.13.0"
+termion = "1.5"

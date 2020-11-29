@@ -3,7 +3,7 @@ use std::io;
 
 mod basic_restore;
 mod basic_backup;
-
+mod tui_test;
 
 fn main() {
 
@@ -32,6 +32,7 @@ fn main() {
         println!("1. Backup the current user (basic, no other input really required)");
         println!("2. Backup the current user (advanced, more options)");
         println!("3. Restore from the most recent backup in the repository/branch (will check against current packages before beginning)");
+        println!("4. Run the tui test");
 
         io::stdin() 
             .read_line(&mut option1)
@@ -58,6 +59,13 @@ fn main() {
                     println!("Restore will begin shortly...");
                     basic_restore::br_check_os();
                     break;
+                 }
+
+            4 => {
+                    println!("Running tui test...");
+                    tui_test::main();
+                    break;
+
                  }
 
             _ => {                                                                                                                                  
