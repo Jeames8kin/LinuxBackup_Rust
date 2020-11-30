@@ -1,9 +1,19 @@
-use std::io;
-//use rand::Rng;
+mod util;// In this circumstance, mod looks for a file called mod inside the ui folder.
+mod ui;
 
-mod basic_restore;
+mod basic_restore;  // While with the ones below, it just looks for the file name.
 mod basic_backup;
-mod tui_test;
+
+use std::io;
+use std::{error::Error};
+use termion::event::Key;
+use termion::input::TermRead;
+use termion::screen::AlternateScreen;
+use crate::util::event::{Event, Events};
+
+
+use termion::raw::IntoRawMode;
+
 
 fn main() {
 
@@ -11,7 +21,7 @@ fn main() {
     
 
     let title = "Backup and restore thing";    
-    let version = "Current version: v1.0.6";
+    let version = "Current build: 8";
     let disclaimer = "Note: This program is subject to change at anytime.";
 
     println!("{}\n", title);
@@ -20,9 +30,9 @@ fn main() {
     
     menu1();
 
-    }
+}
 
-    fn menu1() {
+fn menu1() {
 
     loop {
 
@@ -63,7 +73,7 @@ fn main() {
 
             4 => {
                     println!("Running tui test...");
-                    tui_test::main();
+                    tui_main();
                     break;
 
                  }
@@ -72,6 +82,89 @@ fn main() {
                     println!("Invalid option, try again.\n");   //match will NOT work without a line like this, it's supposed to be if the variable is equal to nothing.
                           
                  }
+
+        }
+
+    }
+
+}
+
+// The tui shit.
+
+use tui::{
+    backend::TermionBackend,
+    layout::{Constraint, Direction, Layout},
+    style::{Color, Modifier, Style},
+    widgets::{Block, Borders, Gauge},
+    Terminal,
+};
+
+struct App {
+    progress_bar1: u16,
+}
+
+impl App {
+    fn new() -> App {
+        App{
+            progress_bar1: 0
+        }   
+    }
+
+    fn update(&mut self) {
+        self.progress_bar1 += 1;
+        if self.progress_bar1 > 100 {
+            self.progress_bar1 = 0;
         }
     }
 }
+    
+
+pub fn tui_main() -> Result<(), Box<dyn Error>> {
+
+    let events = Events::new();
+
+    let mut app = App::new();
+
+    let stdout = io::stdout().into_raw_mode()?;
+    let stdout = AlternateScreen::from(stdout);
+    let backend = TermionBackend::new(stdout);
+    let mut terminal = Terminal::new(backend)?;
+
+    let mut app = App::new();
+
+        loop {    
+            terminal.draw(|f| {
+                let chunks = Layout::default()
+                    .direction(Direction::Vertical)
+                    .margin(2)
+                    .constraints(
+                        [
+                            Constraint::Percentage(25)
+                        ]
+                        .as_ref(),
+                    )
+                    .split(f.size());
+                let gauge = Gauge::default()
+                    .block(Block::default()
+                    .title("Gauge1")
+                    .borders(Borders::ALL))
+                    .gauge_style(Style::default()
+                    .fg(Color::Blue))
+                    .percent(app.progress_bar1);
+                f.render_widget(gauge, chunks[0]);
+        })?;
+
+        match events.next()? {
+            Event::Input(input) => {
+                if input == Key::Char('q') {
+                    break;
+                }
+            }
+            Event::Tick => {
+                app.update();
+            }
+        }
+
+        }
+        Ok(())
+    }

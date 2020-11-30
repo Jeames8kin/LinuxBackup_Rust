@@ -15,4 +15,4 @@ cmd_lib = "0.8.4"
 chrono = "0.4"
 
 tui = "0.13.0"
-termion = "1.5"
+termion = { version = "1.5" }
