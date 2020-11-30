@@ -33,8 +33,8 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Config {
         Config {
-            exit_key: Key::Char('c'),
-            tick_rate: Duration::from_millis(7),
+            exit_key: Key::Char('q'),
+            tick_rate: Duration::from_millis(100),
         }
     }
 }
