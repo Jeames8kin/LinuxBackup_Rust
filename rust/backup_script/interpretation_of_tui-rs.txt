@@ -1,0 +1,18 @@
+This is the interpretation of how I think tui-rs works, sort of like a documentation.
+
+The struct and impl set a couple things, specifically how a variable changes (the progress bar for example),
+and the update function essentially runs everytime that method is called. While it does get run, the program
+will be stuck in the loop inside the main function of the terminal UI.
+
+The main function is meant to output a Result, so if it can't be started it throws an error.
+The f variable in the particular line 'terminal.draw(|f| {})' gets assigned different parts of 
+the tui, such as a block or a gauge. In it, multiple factors are assigned, such as width and height.
+
+Now this is the part I currently don't understand and am currently getting my head around it.
+Constraints and splitting shit. Time will tell, but at this point it'll take a lot of fucking around.
+
+I see now. 
+When you set Constraint::Percentage for chunks, it divides the terminal into how many parts (or the number
+of constraints) you list. So when settings 4 Constraints with 25% each, every item gets a quarter of the terminal.
+
+Once I decide on a layout I'd like to use, I'll bring more functionality into the tui.

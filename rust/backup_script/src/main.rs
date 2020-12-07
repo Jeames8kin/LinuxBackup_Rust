@@ -95,7 +95,7 @@ use tui::{
     backend::TermionBackend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
-    widgets::{Block, Borders, Gauge},
+    widgets::{Block, BorderType, Borders, Gauge},
     Terminal,
 };
 
@@ -132,8 +132,13 @@ pub fn tui_main() -> Result<(), Box<dyn Error>> {
 
     let mut app = App::new();
 
+
         loop {    
+
             terminal.draw(|f| {
+
+                let size = f.size();
+
                 let chunks = Layout::default()
                     .direction(Direction::Vertical)
                     .margin(2)
@@ -144,19 +149,18 @@ pub fn tui_main() -> Result<(), Box<dyn Error>> {
                         .as_ref(),
                     )
                     .split(f.size());
-                let gauge = Gauge::default()
-                    .block(Block::default()
-                    .title("Gauge1")
-                    .borders(Borders::ALL))
-                    .gauge_style(Style::default()
-                    .fg(Color::Blue))
-                    .percent(app.progress_bar1);
-                f.render_widget(gauge, chunks[0]);
+
+                let block = Block::default()
+                    .borders(Borders::ALL)
+                    .title("Main block")
+                    .border_type(BorderType::Rounded);
+                f.render_widget(block, size);
+
         })?;
 
         match events.next()? {
             Event::Input(input) => {
-                if input == Key::Char('q') {
+                if input == Key::Char('c') {
                     break;
                 }
             }
@@ -167,4 +171,4 @@ pub fn tui_main() -> Result<(), Box<dyn Error>> {
 
         }
         Ok(())
-    }
+    } 
