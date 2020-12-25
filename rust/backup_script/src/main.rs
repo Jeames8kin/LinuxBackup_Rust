@@ -41,7 +41,7 @@ fn menu1() {
         println!("Select your option you want to run:");
         println!("1. Backup the current user (basic, no other input really required)");
         println!("2. Backup the current user (advanced, more options)");
-        println!("3. Restore from the most recent backup in the repository/branch (will check against current packages before beginning)");
+        println!("3. Restore from backup");
         println!("4. Run the tui test");
 
         io::stdin() 
@@ -79,7 +79,7 @@ fn menu1() {
                  }
 
             _ => {                                                                                                                                  
-                    println!("Invalid option, try again.\n");   //match will NOT work without a line like this, it's supposed to be if the variable is equal to nothing.
+                    println!("Invalid option, try again.\n");   //match will NOT work without a line like this, it's supposed to be if the variable is equal to nothing or simply not a valid option.
                           
                  }
 

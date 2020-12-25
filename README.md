@@ -21,3 +21,9 @@ With that in mind, I have a bit of a plan for this project and where I want it t
   <br>
   
   This will be interesting to make, so time for me to commit to this.
+
+  Main Edit 1 (25/12/2020):
+  Been forever since I last updated this file, so I'll do it now so I know where to keep track.
+  1. Main priority is getting the extracting process working since I've been fiddling with tui-rs and working that out.
+  2. Once that's done, see if I can get a list of exclusively installed packages, and automatically install `yay` so it installs everything.
+  3. Then I can begin work on the terminal UI version, just so that the program itself properly functions, and not half-baked like it currently is.
