@@ -7,7 +7,7 @@ mod basic_backup;
 use std::io;
 use std::{error::Error};
 use termion::event::Key;
-use termion::input::TermRead;
+//use termion::input::TermRead;
 use termion::screen::AlternateScreen;
 use crate::util::event::{Event, Events};
 
@@ -31,6 +31,9 @@ fn main() {
     menu1();
 
 }
+
+#[allow(unused_must_use)]
+
 
 fn menu1() {
 
@@ -91,6 +94,8 @@ fn menu1() {
 
 // The tui shit.
 
+#[allow(unused_imports)]
+
 use tui::{
     backend::TermionBackend,
     layout::{Constraint, Direction, Layout},
@@ -123,7 +128,7 @@ pub fn tui_main() -> Result<(), Box<dyn Error>> {
 
     let events = Events::new();
 
-    let mut app = App::new();
+    let mut _app = App::new();
 
     let stdout = io::stdout().into_raw_mode()?;
     let stdout = AlternateScreen::from(stdout);
@@ -139,7 +144,7 @@ pub fn tui_main() -> Result<(), Box<dyn Error>> {
 
                 let size = f.size();
 
-                let chunks = Layout::default()
+                let _chunks = Layout::default()
                     .direction(Direction::Vertical)
                     .margin(2)
                     .constraints(

@@ -2,11 +2,7 @@
 //TODO: Not make the paths str variables/hardcoded.
 
 use std::io;
-use std::process::Command;
-use std::string;
-use std::path::Path;
 use std::fs;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use chrono::prelude::*;
 
 use cmd_lib::run_cmd;
@@ -16,16 +12,16 @@ extern crate os_type;
 extern crate chrono;
 
 pub fn bb_check_os() {
-    let script_verdict = false;
+    let _script_verdict = false;
 
-    let os = os_type::current_platform();
+    let _os = os_type::current_platform();
     match os_type::current_platform().os_type {
         os_type::OSType::Arch => {
-            bb_initialisation();
+            init();
         }
         os_type::OSType::Manjaro => {
             println!("Please note that Manjaro is not supported, if something breaks or doesn't work you are at fault! ");
-            bb_initialisation();
+            init();
         }
         _ => {
             println!("This operating system is unsupported, please use Arch Linux!");
@@ -38,9 +34,21 @@ pub fn bb_check_os() {
 
 //-----------------------------------------------------------------------------
 
-fn bb_initialisation() {
+fn init() {
+    let utc: chrono::DateTime<Local> = Local::now();    // Sets this variable to the current date and time. Needs to be the first thing to run, not the last.
+    let mut utc2 = utc.to_string();                     // Converts the time and date variable to a String to be manipulated.
+    utc2.truncate(19);                                  // Shortens string to 19 characters.
+    utc2 = str::replace(utc2.as_str(), ":", "-");
+    utc2 = str::replace(utc2.as_str(), " ", "_");
 
-    let mut backup_dir = "/home/jeames8kin/rustTestEnv";
+    println!("Current date and time: {}", utc2);
+    
+    setup(utc2);
+}
+
+fn setup(time_date:String) {
+
+    let backup_dir = "/home/jeames8kin/rustTestEnv";
 
     println!("Starting backup process...");
 
@@ -68,12 +76,12 @@ fn bb_initialisation() {
         .read_line(&mut input1)
         .expect("That isn't a valid answer");
 
-    let mut input1_trimmed = input1.trim();
+    let input1_trimmed = input1.trim();
 
         match input1_trimmed {
 
             "yes" | "Yes" | "YES" | "y" | "Y" => {          // Defined Strings don't work for this? Like, at all? Says it can't access/find them.
-                temp_dir_setup(backup_dir.to_string());
+                temp_dir_setup(backup_dir.to_string(), time_date);
                 break;
             },
             "no" | "No" | "NO" | "n" | "N" => {
@@ -90,9 +98,9 @@ fn bb_initialisation() {
 
 //-----------------------------------------------------------------------------
 
-    fn temp_dir_setup(backup_dir:String) {
+    fn temp_dir_setup(backup_dir:String, time_date:String) {
 
-        let mut backup_dir1 = backup_dir;
+        let backup_dir1 = backup_dir;
 
         println!("Choose where to store the temporary directory (default is /tmp/LinuxBackup_Rust)");
 
@@ -105,11 +113,11 @@ fn bb_initialisation() {
         match directory.as_ref() {      //To compare a String, it needs to be in str rather than String, otherwise it just uses the first match arm. 
             "\n" => {
                 directory = String::from("/tmp/LinuxBackup_Rust");
-                make_dir(directory.trim().to_string(), backup_dir1);
+                make_dir(directory.trim().to_string(), backup_dir1, time_date);
             }
 
             _ => {
-                make_dir(directory.trim().to_string(), backup_dir1);     //We need to copy/transfer/re-assign directory in a variable in make_dir, since once the program leaves the scope of the variable it basically destroys it.
+                make_dir(directory.trim().to_string(), backup_dir1, time_date);     //We need to copy/transfer/re-assign directory in a variable in make_dir, since once the program leaves the scope of the variable it basically destroys it.
             }
 
         }
@@ -118,7 +126,7 @@ fn bb_initialisation() {
 
 //-----------------------------------------------------------------------------
 
-fn make_dir(directory:String, backup_dir:String) {      // This line acts as a function I can call and put a directory into its arguments, no extra code needed each folder.
+fn make_dir(directory:String, backup_dir:String, time_date:String) {      // This line acts as a function I can call and put a directory into its arguments, no extra code needed each folder.
     let directory1 = directory.as_str();
     let result = fs::create_dir(directory1);
 
@@ -128,13 +136,13 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
 
         Ok(_) => {
             println!("Created {}", directory1);
-            let mut temp_dir_path = println!("{}", directory1);
-            pv_check(directory1.to_string(), backup_dir)
+            let _temp_dir_path = println!("{}", directory1);
+            pv_check(directory1.to_string(), backup_dir, time_date)
         }
 
         Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
             println!("{} already exists, clearing directory...", directory1);    
-            let mut temp_dir_path = directory1;  
+            let temp_dir_path = directory1;  
 
             if run_cmd! {
                 rm -R ${temp_dir_path};
@@ -178,7 +186,7 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
 
             }
 
-            pv_check(directory1.to_string(), backup_dir);
+            pv_check(directory1.to_string(), backup_dir, time_date);
             
         }
 
@@ -206,9 +214,8 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
     
 //-----------------------------------------------------------------------------
 
-    fn pv_check(temp_dir_path:String, backup_dir:String) {
+    fn pv_check(temp_dir_path:String, backup_dir:String, time_date:String) {
         println!("Backing up {} (temp dir: {})", backup_dir, temp_dir_path);
-        let mut system_time = SystemTime::now();
         
         let pv_check = run_fun!(pacman -Qqe | grep pv).unwrap();
 
@@ -220,10 +227,12 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
                 sudo pacman -S pv;
             }.is_err() {
                 println!("The backup can continue without pv, but the progress will not be displayed.");
-                no_pv(temp_dir_path, backup_dir);
+                no_pv(temp_dir_path, backup_dir, time_date);
             }
         }
         
+        package_backup();
+
     } 
 
     fn has_pv(temp_dir_path:String, backup_dir:String) {     // Run this is pv is installed.
@@ -236,25 +245,15 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
             println!("The archive failed?");
         }
 
-        if run_cmd! {
-            echo "exa output";
-            exa /tmp/LinuxBackup_Rust/;
-            sha256sum /tmp/LinuxBackup_Rust/backup.tar > /tmp/LinuxBackup_Rust/sha256;
-        }.is_err() {
-            println!("The sha256 failed to run");
-        }
-
-        package_backup();
-
     }
 
-    fn no_pv(temp_dir_path:String, backup_dir:String) {     // Run this if pv is not installed.
+    fn no_pv(temp_dir_path:String, backup_dir:String, time_date:String) {     // Run this if pv is not installed.
 
-        let username1 = run_fun!(whoami).unwrap();
+        let _username1 = run_fun!(whoami).unwrap();
 
         if run_cmd! {
 //          echo "no pv";
-            tar -czf ${temp_dir_path}/backup.tar ${backup_dir};  
+            tar -czf ${temp_dir_path}/${time_date}.tar ${backup_dir};  
 
         }.is_err() {
             println!("The archive failed?");
@@ -265,28 +264,14 @@ fn make_dir(directory:String, backup_dir:String) {      // This line acts as a f
     }
 
     fn package_backup() {
-        let utc: chrono::DateTime<Local> = Local::now();    // Sets this variable to the current date and time.
-        let mut utc2 = utc.to_string();     // Converts the time and date variable to a String to be manipulated.
-        utc2.truncate(19);                  // Shortens string to 19 characters.
-        utc2 = str::replace(utc2.as_str(), ":", "-");
-        utc2 = str::replace(utc2.as_str(), " ", "_");
-
-        println!("{}", utc2);
-
         let package_list = run_fun!(pacman -Qqet).unwrap();
         let package_list1 = str::replace(package_list.as_str(), "\n", " ");
-        println!("{}", package_list1);
-
-        if run_fun! {
-            
-
-
+        if run_cmd! {
+            echo ${package_list1} > test.txt;
         }.is_err() {
-            println!("huh?");
+            println!("Failed to echo package list.");
+            std::process::exit(1);
         }
-        
-
-
         
     }
 

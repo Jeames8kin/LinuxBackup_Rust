@@ -17,6 +17,9 @@ pub enum Event<I> {
 
 /// A small event handler that wrap termion input and tick events. Each event
 /// type is handled in its own thread and returned to a common `Receiver`
+
+#[allow(dead_code)]
+
 pub struct Events {
     rx: mpsc::Receiver<Event<Key>>,
     input_handle: thread::JoinHandle<()>,
@@ -81,13 +84,19 @@ impl Events {
         }
     }
 
+
+    
     pub fn next(&self) -> Result<Event<Key>, mpsc::RecvError> {
         self.rx.recv()
     }
 
+    #[allow(dead_code)]
+
     pub fn disable_exit_key(&mut self) {
         self.ignore_exit_key.store(true, Ordering::Relaxed);
     }
+
+    #[allow(dead_code)]
 
     pub fn enable_exit_key(&mut self) {
         self.ignore_exit_key.store(false, Ordering::Relaxed);
