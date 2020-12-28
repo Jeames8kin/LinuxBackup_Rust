@@ -221,7 +221,7 @@ fn make_dir(directory:String, backup_dir:String, time_date:String) {      // Thi
 
         if pv_check == "pv" {
             println!("pv is already installed");
-            has_pv(temp_dir_path, backup_dir);
+            has_pv(temp_dir_path, backup_dir, time_date);
         } else {
             if run_cmd! {
                 sudo pacman -S pv;
@@ -235,11 +235,13 @@ fn make_dir(directory:String, backup_dir:String, time_date:String) {      // Thi
 
     } 
 
-    fn has_pv(temp_dir_path:String, backup_dir:String) {     // Run this is pv is installed.
+    fn has_pv(temp_dir_path:String, backup_dir:String, time_date:String) {     // Run this is pv is installed.
+
+        println!("{}", time_date);
 
         if run_cmd! {
 //          echo "has pv";
-            tar -czf - ${backup_dir} | pv > ${temp_dir_path}/backup.tar;
+            tar -czf - ${backup_dir} | pv > ${temp_dir_path}/${time_date}.tar;
                  // Questioning whether to .tar everything straight up or copy everything to the tmp folder and tar it there. 
         }.is_err() {
             println!("The archive failed?");
@@ -266,12 +268,15 @@ fn make_dir(directory:String, backup_dir:String, time_date:String) {      // Thi
     fn package_backup() {
         let package_list = run_fun!(pacman -Qqet).unwrap();
         let package_list1 = str::replace(package_list.as_str(), "\n", " ");
+        println!("Archive completed, gathering package list...");
         if run_cmd! {
             echo ${package_list1} > test.txt;
         }.is_err() {
             println!("Failed to echo package list.");
             std::process::exit(1);
         }
+
+        println!("The package list will be stored in: /home/jeames8kin/LinuxBackup_Rust/rust/backup_script/test.txt");
         
     }
 
